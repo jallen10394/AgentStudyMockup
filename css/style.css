@@ -1,0 +1,629 @@
+/* ============================================================
+   Agent Approval Study — stylesheet
+   Light touch: colours live in the :root block below.
+   ============================================================ */
+
+:root {
+  --bg:            #1b1b1f;
+  --bg-panel:      #232329;
+  --bg-raised:     #2b2b33;
+  --border:        #3a3a44;
+  --text:          #e6e6ea;
+  --text-dim:      #9b9ba6;
+  --accent:        #d79a6a;   /* agent bullet / highlights */
+  --green:         #6fbf73;
+  --red:           #e06c6c;
+  --blue:          #6fa8dc;
+  --yellow:        #d9c05a;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+          "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ---------- top bar ---------- */
+
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 20px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-title { font-weight: 600; font-size: 14px; }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-progress {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+/* countdown — empty and invisible unless a scenario is running */
+.topbar-timer {
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--text-dim);
+}
+
+.topbar-timer:empty { display: none; }
+
+.topbar-timer.warn {
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+/* ---------- layout ---------- */
+
+#screen {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 28px 20px 120px;
+}
+
+h1 { font-size: 24px; margin: 0 0 8px; }
+h2 { font-size: 19px; margin: 28px 0 10px; }
+p  { margin: 0 0 14px; }
+
+.lede { color: var(--text-dim); margin-bottom: 28px; }
+
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  margin-bottom: 18px;
+}
+
+.hint { font-size: 13px; color: var(--text-dim); }
+
+/* ---------- buttons ---------- */
+
+button {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 9px 18px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) { border-color: #55555f; }
+button:disabled { opacity: .45; cursor: default; }
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #241a12;
+  font-weight: 600;
+}
+
+/* The two judgement buttons are deliberately identical — colour
+   coding either one would cue the answer. */
+button.judge-btn {
+  min-width: 140px;
+  background: var(--bg-raised);
+  border: 1px solid #55555f;
+  color: var(--text);
+  font-weight: 600;
+  padding: 11px 20px;
+}
+button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+/* ---------- surveys ---------- */
+
+.question { margin-bottom: 26px; }
+
+.question .q-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.question .q-help {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.required-star { color: var(--accent); margin-left: 3px; }
+
+.question input[type="text"],
+.question input[type="number"],
+.question select,
+.question textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 9px 11px;
+}
+
+.question textarea { min-height: 96px; resize: vertical; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.option input { margin-top: 4px; flex: none; }
+
+/* likert scale */
+
+.scale {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.scale-point {
+  flex: 1;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 4px;
+  cursor: pointer;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.scale-point:hover { border-color: #55555f; }
+
+.scale-point.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #241a12;
+  font-weight: 600;
+}
+
+.scale-point input { display: none; }
+
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.validation-msg {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 18px;
+}
+
+/* ============================================================
+   Agent transcript
+   ============================================================ */
+
+.agent-brief {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.agent-brief .brief-label {
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.terminal {
+  background: #141417;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* The human's turn. Boxed, labelled, tinted and set in the UI font —
+   everything the agent says is bare monospace, so the two voices
+   should never be confused at a glance. */
+.term-prompt {
+  background: #101016;
+  border: 1px solid #40404e;
+  border-left: 3px solid var(--blue);
+  border-radius: 8px;
+  padding: 11px 14px 12px;
+  margin-bottom: 22px;
+}
+
+.term-prompt .prompt-label {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 7px;
+}
+
+.term-prompt .prompt-line {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.term-prompt .caret { color: var(--blue); font-weight: 700; flex: none; }
+
+.term-prompt .ptext {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: #eef1f7;
+}
+
+/* the send gate: the session does not start until this is pressed */
+.term-prompt .prompt-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid #33333f;
+}
+
+.term-prompt .prompt-hint {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+button.send {
+  font-family: var(--sans);
+  background: #1d3448;
+  border-color: #3a607f;
+  color: #d3e6f6;
+  font-weight: 600;
+}
+button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
+
+.entry { margin-bottom: 14px; }
+
+.say {
+  display: flex;
+  gap: 10px;
+  white-space: pre-wrap;
+}
+.say .bullet { color: var(--accent); flex: none; }
+
+.think {
+  color: var(--text-dim);
+  font-style: italic;
+  white-space: pre-wrap;
+  padding-left: 22px;
+}
+
+/* tool call block */
+
+.tool {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  margin: 4px 0 4px 0;
+  overflow: hidden;
+}
+
+.tool.pending { border-color: var(--yellow); box-shadow: 0 0 0 1px rgba(217,192,90,.25); }
+.tool.judged { border-color: var(--border); }
+.tool.timed-out { border-color: var(--border); opacity: .62; }
+
+.tool-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 9px 13px;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.tool-name { color: var(--accent); font-weight: 600; }
+.tool-title { color: var(--text); word-break: break-all; }
+
+.tool-body {
+  margin: 0;
+  padding: 11px 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: #cfcfd8;
+  overflow-x: auto;
+}
+
+.tool-body .add { color: var(--green); }
+.tool-body .del { color: var(--red); }
+.tool-body .meta { color: var(--text-dim); }
+
+.tool-output {
+  border-top: 1px dashed var(--border);
+  padding: 9px 13px;
+  white-space: pre-wrap;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  margin: 0;
+}
+
+.tool-output.err { color: var(--red); }
+
+/* provenance panel — treatment condition only.
+
+   Deliberately quiet: a panel that shouted would change how the
+   tool call itself reads, and only one group sees it. */
+
+.prov {
+  border-top: 1px dashed var(--border);
+  font-family: var(--sans);
+}
+
+.prov-summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  list-style: none;
+  user-select: none;
+}
+
+/* hide the browser's own triangle; we draw our own */
+.prov-summary::-webkit-details-marker { display: none; }
+.prov-summary::marker { content: ''; }
+
+.prov-summary:hover { color: var(--text); }
+
+.prov-twistie {
+  display: inline-block;
+  font-family: var(--mono);
+  font-weight: 700;
+  transition: transform .12s ease;
+}
+
+.prov[open] .prov-twistie { transform: rotate(90deg); }
+
+.prov-panel {
+  padding: 2px 13px 12px;
+  border-top: 1px solid #32323c;
+  background: #1e1e24;
+}
+
+.prov-intro {
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 9px 0 3px;
+}
+
+.prov-empty {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 9px 0 2px;
+}
+
+.prov-row {
+  padding: 9px 0;
+  border-bottom: 1px solid #2a2a33;
+}
+.prov-row:last-child { border-bottom: 0; }
+
+.prov-top {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.prov-arg {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.prov-origin {
+  font-size: 11px;
+  letter-spacing: .03em;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-dim);
+}
+
+/* Only applied when STUDY.provenance.colourByOrigin is on. */
+.prov-origin.tone-ok      { color: var(--green);  border-color: #3d5c40; }
+.prov-origin.tone-warn    { color: var(--yellow); border-color: #5c5330; }
+.prov-origin.tone-neutral { color: var(--blue);   border-color: #39536b; }
+
+.prov-value {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #cfcfd8;
+  word-break: break-all;
+  margin-top: 4px;
+}
+
+.prov-detail {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* judgement bar */
+
+.judgement {
+  border-top: 1px solid var(--border);
+  background: #26262d;
+  padding: 13px;
+}
+
+.judge-q {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.judge-q.chosen {
+  color: var(--text-dim);
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--border);
+}
+
+.judge-buttons { display: flex; gap: 10px; }
+
+/* the judgement bar sits inside the monospace terminal — put it back
+   into the UI font so it reads as chrome, not as agent output */
+.judgement button,
+.judgement .scale-point,
+.judgement .scale-ends { font-family: var(--sans); }
+
+.confidence { margin-top: 13px; }
+
+.confidence .scale { margin-top: 8px; }
+.confidence .scale-ends { margin-bottom: 4px; }
+.confidence .confirm-row { margin-top: 14px; }
+
+.reason-box { margin-top: 12px; }
+.reason-box label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.reason-box textarea {
+  width: 100%;
+  min-height: 62px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+/* Neutral on purpose: the participant gets no feedback on whether
+   their label was right. */
+.decision-tag {
+  font-size: 12px;
+  padding: 7px 13px;
+  border-top: 1px solid var(--border);
+  font-family: var(--sans);
+  color: var(--text-dim);
+}
+
+.working {
+  color: var(--text-dim);
+  padding-left: 22px;
+}
+
+.working .dots::after {
+  content: '';
+  animation: dots 1.2s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+}
+
+.scenario-end {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.timeout-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--yellow);
+  border-radius: 10px;
+  padding: 18px 22px;
+}
+
+.timeout-title {
+  font-weight: 600;
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.timeout-panel p { margin: 0 0 6px; color: var(--text-dim); }
+
+/* ---------- finish screen ---------- */
+
+#export-json {
+  width: 100%;
+  min-height: 260px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+}

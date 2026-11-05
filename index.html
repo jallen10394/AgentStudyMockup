@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Approval Study</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="topbar">
+  <div class="topbar-title" id="study-title">Agent Approval Study</div>
+  <div class="topbar-right">
+    <div class="topbar-timer" id="timer"></div>
+    <div class="topbar-progress" id="progress"></div>
+  </div>
+</header>
+
+<main id="screen"></main>
+
+<!-- ─────────────────────────────────────────────────────────────
+     Engine (you normally never need to touch these)
+     ───────────────────────────────────────────────────────────── -->
+<script src="js/core/registry.js"></script>
+<script src="js/core/timer.js"></script>
+<script src="js/core/results.js"></script>
+<script src="js/core/survey.js"></script>
+<script src="js/core/agent.js"></script>
+
+<!-- ─────────────────────────────────────────────────────────────
+     Study content (edit these)
+     ───────────────────────────────────────────────────────────── -->
+<!-- Who is in which condition. -->
+<script src="js/participants.js"></script>
+
+<script src="js/surveys.js"></script>
+
+<!-- One line per scenario file. No scenarios ship with the engine;
+     write your own in js/scenarios/ and add them here:
+
+         <script src="js/scenarios/my-scenario.js"></script>
+
+     Loading a scenario does not put it in the study — js/config.js
+     decides which ones participants actually see. -->
+
+<script src="js/config.js"></script>
+
+<!-- Starts everything. Must be last. -->
+<script src="js/core/app.js"></script>
+</body>
+</html>
