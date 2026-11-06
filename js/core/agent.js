@@ -34,8 +34,24 @@
 var AgentView = {
 
   /* Tools that stream past without being judged — reading a file
-     cannot do harm, and judging every Read would be tedious. */
-  READ_ONLY: ['Read', 'Grep', 'Glob', 'LS', 'Search', 'TodoWrite'],
+     cannot do harm, and judging every Read would be tedious.
+
+     A scenario with its own vocabulary can still set judge:false
+     by hand, but once the same tool name turns up in a second
+     scenario it belongs here instead: a forgotten flag silently
+     adds a judgement step, which changes what a session measures
+     without changing how it looks. */
+  READ_ONLY: [
+    /* coding */
+    'Read', 'Grep', 'Glob', 'LS', 'Search', 'TodoWrite', 'ReadFile',
+    /* mail and calendar */
+    'SearchInbox', 'ReadEmail', 'ReadCalendar',
+    /* the web */
+    'WebSearch', 'WebFetch'
+  ],
+
+  /* Marks text left out of a provenance snippet. */
+  ELLIPSIS: '…',
 
   /* Set while a scenario is on screen, so the app can stop it. */
   current: null,
@@ -529,7 +545,26 @@ var AgentView = {
     return { el: det, stats: stats };
   },
 
-  /* One argument. { arg, value, origin, detail } — all optional. */
+  /* One argument.
+     { arg, value, origin, source, snippet } — all optional.
+
+     `source` names the step the value came from, as the participant
+     already saw it: either a string, or { tool, ref }. `snippet` is a
+     verbatim excerpt of that source with the value in it.
+
+     Those two are the whole panel, and the row holds nothing else on
+     purpose. There is no field for prose about a value, because a
+     line reading "this address appears nowhere else in the session"
+     states the conclusion the participant is supposed to reach: it is
+     not what a provenance record holds, and a panel that argues
+     measures whether people believe it rather than whether they can
+     read it.
+
+     A row with neither source nor snippet prints P.noSource — the
+     honest rendering for a value the agent produced itself.
+
+     PROVENANCE.md is the standard these rows are written to. Read it
+     before changing what this renders. */
   provRow: function (row, P) {
     var origins = P.origins || {};
     var def = origins[row.origin] || {};
@@ -546,9 +581,69 @@ var AgentView = {
     r.appendChild(top);
 
     if (row.value) r.appendChild(Util.el('div', 'prov-value', row.value));
-    if (row.detail) r.appendChild(Util.el('div', 'prov-detail', row.detail));
+
+    var sourceText = AgentView.provSourceText(row.source);
+
+    if (sourceText) {
+      var src = Util.el('div', 'prov-source');
+      src.appendChild(Util.el('span', 'prov-source-label',
+        P.sourceLabel || 'Source'));
+      src.appendChild(Util.el('span', 'prov-source-ref', sourceText));
+      r.appendChild(src);
+    } else if (!row.snippet && P.noSource) {
+      r.appendChild(Util.el('div', 'prov-nosource', P.noSource));
+    }
+
+    if (row.snippet) r.appendChild(AgentView.provSnippet(row));
 
     return r;
+  },
+
+  /* The quoted excerpt, with elision markers set off from the text.
+
+     An excerpt is almost always lifted out of something longer, and
+     a reader cannot tell a quote that stops from a source that ends.
+     `trimmedBefore` and `trimmedAfter` put an ellipsis at the top or
+     the bottom; a line inside the snippet that is exactly "…" or
+     "..." marks a gap in the middle.
+
+     All three render the same way and in a dimmer colour than the
+     quoted text, because they are the panel talking about the source
+     rather than the source itself — the one place in this panel
+     where that distinction has to be visible. */
+  provSnippet: function (row) {
+    var pre = Util.el('pre', 'prov-snippet');
+    var lines = String(row.snippet).split('\n');
+
+    if (row.trimmedBefore) lines.unshift(AgentView.ELLIPSIS);
+    if (row.trimmedAfter) lines.push(AgentView.ELLIPSIS);
+
+    lines.forEach(function (line, i) {
+      var text = line + (i < lines.length - 1 ? '\n' : '');
+      var bare = line.trim();
+      var isElision = bare === AgentView.ELLIPSIS || bare === '...';
+
+      var span = Util.el('span', isElision ? 'prov-elision' : null);
+      span.textContent = isElision
+        ? line.replace('...', AgentView.ELLIPSIS) +
+          (i < lines.length - 1 ? '\n' : '')
+        : text;
+      pre.appendChild(span);
+    });
+
+    return pre;
+  },
+
+  /* `source` is either a ready-made string, or { tool, ref } naming a
+     tool call the participant has already watched go past. */
+  provSourceText: function (source) {
+    if (!source) return '';
+    if (typeof source === 'string') return source;
+
+    var parts = [];
+    if (source.tool) parts.push(source.tool);
+    if (source.ref) parts.push(source.ref);
+    return parts.join('  ·  ');
   },
 
   body: function (step) {

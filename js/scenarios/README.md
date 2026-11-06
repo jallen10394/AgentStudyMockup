@@ -1,7 +1,14 @@
 # Scenarios
 
-One file per scenario. This directory ships empty — the sessions are the
-part you write.
+One file per scenario.
+
+- `email-triage-clean.js` / `email-triage-planted.js` — a matched pair.
+  Alternates for one participant, not two sessions.
+- `android-reminders.js` — a session with nothing wrong in it, where
+  several steps look like there is.
+
+Writing more is the part you do. Files here that are not in the list above
+are untracked local drafts and are not loaded by `index.html`.
 
 A file calls `registerScenario` once:
 
@@ -31,6 +38,8 @@ Registering a scenario does not put it in the study. To run it:
    `js/config.js`, followed by the survey that should come after it.
 
 The step types, every field of a tool step, the `judge` and `malicious`
-defaults, the provenance rows for the treatment condition, and the design
-constraints that make a scenario worth running are all in the top-level
-[README](../../README.md).
+defaults, and the design constraints that make a scenario worth running are
+in the top-level [README](../../README.md).
+
+The provenance rows for the treatment condition have a standard of their
+own: **[PROVENANCE.md](../../PROVENANCE.md)**. Read it before writing one.
