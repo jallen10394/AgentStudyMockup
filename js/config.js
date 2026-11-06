@@ -99,8 +99,7 @@ var STUDY = {
          - keep sessions that read as the same task apart.
 
        A long benign tail is where vigilance decay shows up — as
-       fewer false alarms, not as misses. The README has the
-       rest of the reasoning. */
+       fewer false alarms, not as misses. */
 
     /* One matched pair ships:
 
@@ -212,10 +211,9 @@ var STUDY = {
 
   /* ---------- provenance panel (the treatment condition) ----------
 
-     PROVENANCE.md is the standard for what goes in these rows, and
-     every scenario in the study follows it. This block is only the
-     panel's wiring: whether it appears, and what the tags are
-     called.
+     This block is only the panel's wiring: whether it appears, and
+     what the tags are called. What goes in the rows themselves is
+     decided in each scenario file.
 
      A fold-out panel on each tool call saying where the agent got
      each argument from. OFF here, which is the control condition;

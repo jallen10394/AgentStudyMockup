@@ -561,10 +561,7 @@ var AgentView = {
      read it.
 
      A row with neither source nor snippet prints P.noSource — the
-     honest rendering for a value the agent produced itself.
-
-     PROVENANCE.md is the standard these rows are written to. Read it
-     before changing what this renders. */
+     honest rendering for a value the agent produced itself. */
   provRow: function (row, P) {
     var origins = P.origins || {};
     var def = origins[row.origin] || {};
