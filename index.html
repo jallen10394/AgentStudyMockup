@@ -5,13 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agent Approval Study</title>
 <link rel="stylesheet" href="css/style.css">
-
-<!-- These two load up here, before the page is painted, so that a
-     light-theme session does not flash dark first. js/config.js only
-     defines STUDY; everything that reads it still loads at the bottom
-     of the page, in the order below. -->
-<script src="js/config.js"></script>
-<script src="js/core/theme.js"></script>
 </head>
 <body>
 
@@ -53,7 +46,7 @@
 <script src="js/scenarios/email-triage-planted.js"></script>
 <script src="js/scenarios/android-reminders.js"></script>
 
-<!-- js/config.js is loaded in the <head> above, with the theme. -->
+<script src="js/config.js"></script>
 
 <!-- Starts everything. Must be last. -->
 <script src="js/core/app.js"></script>

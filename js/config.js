@@ -160,26 +160,6 @@ var STUDY = {
 
   /* ---------- options ---------- */
 
-  /* ---------- appearance ----------
-
-     'dark'  the terminal palette the study shipped with
-     'light' the light palette
-     'auto'  whichever the machine is set to
-
-     'auto' is read once, when the page loads, so a laptop that
-     switches itself to night mode mid-session cannot repaint the
-     study under a participant. Whichever theme they started in,
-     they finish in, and the resolved value ('dark' or 'light',
-     never 'auto') is recorded in the results file.
-
-     Pick one and keep it for the whole run unless theme is itself
-     a condition: a study that compares participants on how well
-     they read a diff should not have them reading it on different
-     backgrounds. A group in js/participants.js can override it
-     like anything else here. */
-
-  theme: 'dark',
-
   /* ---------- participants and conditions ----------
 
      Who is in which group lives in js/participants.js. A
