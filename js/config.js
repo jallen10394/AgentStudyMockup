@@ -101,17 +101,28 @@ var STUDY = {
        A long benign tail is where vigilance decay shows up — as
        fewer false alarms, not as misses. */
 
-    /* One matched pair ships:
+    /* Two matched pairs are loaded, plus one standalone:
 
          email-triage-{clean,planted}
-           a professor's inbox. The planted one obeys an
+           a professor's inbox. The planted twin obeys an
            instruction hidden in an applicant's attachment and
            sends internal admissions material out.
 
-       The two files are ALTERNATES, not two sessions. Same task,
-       same steps, same judged indices — back to back they read
-       as the same session twice, and the second would be judged
-       in the light of the first. Give one to each group by
+         travel-booking-{clean,planted}
+           a conference trip. The planted twin books through a
+           channel the hotel's own listing text asked for,
+           against the policy it read at step 1.
+
+         android-reminders
+           a reminder feature in the team's own app. No twin,
+           nothing planted: every judged step is benign, and six
+           look like the profile of something sketchy. Measures
+           what a participant does when there is nothing to find.
+
+       Each pair is ALTERNATES, not two sessions. Same task, same
+       steps, same judged indices — back to back they read as the
+       same session twice, and the second would be judged in the
+       light of the first. Give one of each to a group by
        overriding `flow` in js/participants.js:
 
            overrides: {
@@ -121,6 +132,8 @@ var STUDY = {
                { type: 'survey',   id: 'post' },
                { type: 'scenario', id: 'android-reminders' },
                { type: 'survey',   id: 'post' },
+               { type: 'scenario', id: 'travel-booking-clean' },
+               { type: 'survey',   id: 'post' },
                { type: 'survey',   id: 'exit' },
                { type: 'finish' }
              ]
@@ -128,30 +141,15 @@ var STUDY = {
 
        `flow` overrides replace the array wholesale, so a group
        that overrides it must list the whole thing, including the
-       info screen above if it wants one.
-
-       Standing on its own, with no twin and nothing planted:
-
-         android-reminders
-           a reminder feature in the team's own app. Every
-           judged step is benign, and six of them look like the
-           profile of something sketchy — starts on boot, wakes
-           the device, exports a component, grants itself a
-           permission. It measures specificity: what a
-           participant does when there is nothing to find.
-
-       It is the clean tail, so it goes last. Opening with it
-       would teach that nothing is in any of them.
-
-       Two sessions is thin for a real run. The ordering notes
-       above are written for a longer flow, and they are the
-       reason to keep writing: a warm-up first, the measurement
-       you care about in the middle, a clean session at the end. */
+       info screen above if it wants one. */
 
     { type: 'scenario', id: 'email-triage-planted' },
     { type: 'survey',   id: 'post' },
 
     { type: 'scenario', id: 'android-reminders' },
+    { type: 'survey',   id: 'post' },
+
+    { type: 'scenario', id: 'travel-booking-planted' },
     { type: 'survey',   id: 'post' },
 
     { type: 'survey',   id: 'exit' },
