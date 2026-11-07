@@ -23,7 +23,12 @@ js/participants.js   who is in which condition
 js/surveys.js        survey questions
 js/scenarios/        one file per scenario
 js/core/*.js         engine. You shouldn't need to touch these.
+css/style.css        the two colour themes, and everything else
 ```
+
+`js/config.js` and `js/core/theme.js` load in the `<head>` rather than at the
+bottom of the page, so the theme is set before anything is painted. Everything
+else still loads in order at the end of `<body>`.
 
 ## The flow
 
@@ -155,6 +160,35 @@ steps carry the same origins and tags.
 
 Open the browser console after a treatment ID starts: it prints every judged
 step in the flow with no provenance rows.
+
+## Theme
+
+`theme` in `js/config.js`: `'dark'` (default), `'light'`, or `'auto'` to follow
+the machine. `auto` is read once at load, so a laptop that switches itself to
+night mode mid-session cannot repaint the study under a participant — whichever
+theme they started in, they finish in. The resolved value (`'dark'` or
+`'light'`, never `'auto'`) is recorded at `config.theme` in the results.
+
+Pick one and keep it for the whole run unless theme is itself a condition: a
+study comparing how well people read a diff should not have them reading it on
+different backgrounds. A group can override it like anything else:
+
+```js
+registerGroup('light-condition', {
+  ids: ['...'],
+  overrides: { theme: 'light' }
+});
+```
+
+Both themes are defined entirely as custom properties at the top of
+`css/style.css` — `:root` is dark, `:root[data-theme="light"]` is light, and
+nothing below those two blocks hard-codes a colour. A third theme is one more
+block.
+
+Two constraints any theme has to hold, because they are what the study
+measures: **the two judgement buttons must stay visually identical**, and **no
+provenance row may read as more alarming than another**. Colour coding either
+one answers the question the participant is being asked.
 
 ## Time limit
 

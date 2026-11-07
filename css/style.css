@@ -1,24 +1,142 @@
 /* ============================================================
    Agent Approval Study — stylesheet
-   Light touch: colours live in the :root block below.
+
+   Every colour in this file is a token defined in the two blocks
+   below: :root is the dark theme, :root[data-theme="light"] is the
+   light one. Nothing further down hard-codes a colour, so a new
+   theme is one more block and no other edits.
+
+   js/core/theme.js sets data-theme before the first paint, from
+   STUDY.theme in js/config.js ('dark', 'light' or 'auto').
+
+   The two judgement buttons must stay visually identical, and no
+   provenance row may read as more alarming than another — colour
+   coding either one would answer the question the study asks. Any
+   theme has to hold that line.
    ============================================================ */
 
 :root {
+  color-scheme: dark;
+
+  /* surfaces, page outwards */
   --bg:            #1b1b1f;
   --bg-panel:      #232329;
   --bg-raised:     #2b2b33;
+  --bg-sunken:     #141417;   /* the terminal, set below the page */
+
   --border:        #3a3a44;
+  --border-strong: #55555f;   /* hover and emphasis */
+
   --text:          #e6e6ea;
   --text-dim:      #9b9ba6;
+  --text-faint:    #5d5d6b;   /* elision markers */
+  --text-code:     #cfcfd8;   /* diff bodies, provenance values */
+
   --accent:        #d79a6a;   /* agent bullet / highlights */
+  --on-accent:     #241a12;   /* text on an accent-filled surface */
+
   --green:         #6fbf73;
   --red:           #e06c6c;
   --blue:          #6fa8dc;
   --yellow:        #d9c05a;
+
+  /* buttons */
+  --btn-hover-bg:      #33333c;
+  --btn-hover-border:  #6d6d79;
+
+  /* the user's turn, and the Submit gate inside it */
+  --prompt-bg:         #101016;
+  --prompt-border:     #40404e;
+  --prompt-rule:       #33333f;
+  --prompt-text:       #eef1f7;
+  --send-bg:           #1d3448;
+  --send-border:       #3a607f;
+  --send-text:         #d3e6f6;
+  --send-bg-hover:     #24415a;
+  --send-border-hover: #4a7398;
+
+  /* a tool call awaiting judgement, and the bar under it */
+  --pending-glow:  rgba(217, 192, 90, .25);
+  --judgement-bg:  #26262d;
+
+  /* provenance panel */
+  --prov-bg:             #1e1e24;
+  --prov-rule:           #32323c;
+  --prov-row-border:     #2a2a33;
+  --prov-source-text:    #c3c3ce;
+  --snippet-bg:          #141418;
+  --snippet-border:      #3f3f4b;
+  --snippet-text:        #b9b9c6;
+  --tone-ok-border:      #3d5c40;
+  --tone-warn-border:    #5c5330;
+  --tone-neutral-border: #39536b;
+
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
           "Liberation Mono", monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
+}
+
+/* ---------- light theme ----------
+
+   Same structure, same relationships: the terminal still sits below
+   the page, a tool call still sits above the terminal, and the
+   provenance panel is still the quietest thing on screen.
+
+   The accent is darker here than in the dark theme. It is used as a
+   text colour as well as a fill (the agent bullet, tool names, the
+   required-field star), and #d79a6a on white is unreadable. */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg:            #f6f5f3;
+  --bg-panel:      #ffffff;
+  --bg-raised:     #eeebe7;
+  --bg-sunken:     #efedea;
+
+  --border:        #dbd7d1;
+  --border-strong: #b5afa6;
+
+  --text:          #1e1d1b;
+  --text-dim:      #6a655e;
+  --text-faint:    #8f8880;
+  --text-code:     #35312d;
+
+  --accent:        #a2592a;
+  --on-accent:     #fffaf5;
+
+  --green:         #2d7a38;
+  --red:           #b22722;
+  --blue:          #2a6aa0;
+  --yellow:        #8a6a10;
+
+  --btn-hover-bg:      #e4e0db;
+  --btn-hover-border:  #9c958b;
+
+  --prompt-bg:         #ffffff;
+  --prompt-border:     #cdd8e3;
+  --prompt-rule:       #e3e8ee;
+  --prompt-text:       #131d26;
+  --send-bg:           #e6f0fa;
+  --send-border:       #a3c3e0;
+  --send-text:         #15496f;
+  --send-bg-hover:     #d6e6f7;
+  --send-border-hover: #80a9d2;
+
+  --pending-glow:  rgba(138, 106, 16, .20);
+  --judgement-bg:  #f4f2ee;
+
+  --prov-bg:             #faf9f7;
+  --prov-rule:           #e6e2dc;
+  --prov-row-border:     #ece8e2;
+  --prov-source-text:    #4b4741;
+  --snippet-bg:          #f2f0ec;
+  --snippet-border:      #c9c3ba;
+  --snippet-text:        #46423c;
+  --tone-ok-border:      #9cc2a1;
+  --tone-warn-border:    #c8b880;
+  --tone-neutral-border: #9dbad4;
 }
 
 * { box-sizing: border-box; }
@@ -113,13 +231,13 @@ button {
   cursor: pointer;
 }
 
-button:hover:not(:disabled) { border-color: #55555f; }
+button:hover:not(:disabled) { border-color: var(--border-strong); }
 button:disabled { opacity: .45; cursor: default; }
 
 button.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #241a12;
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -128,12 +246,15 @@ button.primary {
 button.judge-btn {
   min-width: 140px;
   background: var(--bg-raised);
-  border: 1px solid #55555f;
+  border: 1px solid var(--border-strong);
   color: var(--text);
   font-weight: 600;
   padding: 11px 20px;
 }
-button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
+button.judge-btn:hover {
+  background: var(--btn-hover-bg);
+  border-color: var(--btn-hover-border);
+}
 
 .btn-row {
   display: flex;
@@ -207,12 +328,12 @@ button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
   font-size: 13px;
 }
 
-.scale-point:hover { border-color: #55555f; }
+.scale-point:hover { border-color: var(--border-strong); }
 
 .scale-point.selected {
   background: var(--accent);
   border-color: var(--accent);
-  color: #241a12;
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -255,7 +376,7 @@ button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
 }
 
 .terminal {
-  background: #141417;
+  background: var(--bg-sunken);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 18px 20px;
@@ -268,8 +389,8 @@ button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
    everything the agent says is bare monospace, so the two voices
    should never be confused at a glance. */
 .term-prompt {
-  background: #101016;
-  border: 1px solid #40404e;
+  background: var(--prompt-bg);
+  border: 1px solid var(--prompt-border);
   border-left: 3px solid var(--blue);
   border-radius: 8px;
   padding: 11px 14px 12px;
@@ -297,7 +418,7 @@ button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
 .term-prompt .ptext {
   font-family: var(--sans);
   font-size: 14px;
-  color: #eef1f7;
+  color: var(--prompt-text);
 }
 
 /* the send gate: the session does not start until this is pressed */
@@ -309,7 +430,7 @@ button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
   flex-wrap: wrap;
   margin-top: 13px;
   padding-top: 12px;
-  border-top: 1px solid #33333f;
+  border-top: 1px solid var(--prompt-rule);
 }
 
 .term-prompt .prompt-hint {
@@ -320,12 +441,15 @@ button.judge-btn:hover { background: #33333c; border-color: #6d6d79; }
 
 button.send {
   font-family: var(--sans);
-  background: #1d3448;
-  border-color: #3a607f;
-  color: #d3e6f6;
+  background: var(--send-bg);
+  border-color: var(--send-border);
+  color: var(--send-text);
   font-weight: 600;
 }
-button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
+button.send:hover:not(:disabled) {
+  background: var(--send-bg-hover);
+  border-color: var(--send-border-hover);
+}
 
 .entry { margin-bottom: 14px; }
 
@@ -353,7 +477,7 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
   overflow: hidden;
 }
 
-.tool.pending { border-color: var(--yellow); box-shadow: 0 0 0 1px rgba(217,192,90,.25); }
+.tool.pending { border-color: var(--yellow); box-shadow: 0 0 0 1px var(--pending-glow); }
 .tool.judged { border-color: var(--border); }
 .tool.timed-out { border-color: var(--border); opacity: .62; }
 
@@ -376,7 +500,7 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
   word-break: break-word;
   font-family: var(--mono);
   font-size: 12.5px;
-  color: #cfcfd8;
+  color: var(--text-code);
   overflow-x: auto;
 }
 
@@ -434,8 +558,8 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
 
 .prov-panel {
   padding: 2px 13px 12px;
-  border-top: 1px solid #32323c;
-  background: #1e1e24;
+  border-top: 1px solid var(--prov-rule);
+  background: var(--prov-bg);
 }
 
 .prov-intro {
@@ -453,7 +577,7 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
 
 .prov-row {
   padding: 9px 0;
-  border-bottom: 1px solid #2a2a33;
+  border-bottom: 1px solid var(--prov-row-border);
 }
 .prov-row:last-child { border-bottom: 0; }
 
@@ -481,14 +605,14 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
 }
 
 /* Only applied when STUDY.provenance.colourByOrigin is on. */
-.prov-origin.tone-ok      { color: var(--green);  border-color: #3d5c40; }
-.prov-origin.tone-warn    { color: var(--yellow); border-color: #5c5330; }
-.prov-origin.tone-neutral { color: var(--blue);   border-color: #39536b; }
+.prov-origin.tone-ok      { color: var(--green);  border-color: var(--tone-ok-border); }
+.prov-origin.tone-warn    { color: var(--yellow); border-color: var(--tone-warn-border); }
+.prov-origin.tone-neutral { color: var(--blue);   border-color: var(--tone-neutral-border); }
 
 .prov-value {
   font-family: var(--mono);
   font-size: 12px;
-  color: #cfcfd8;
+  color: var(--text-code);
   word-break: break-all;
   margin-top: 4px;
 }
@@ -520,7 +644,7 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
 .prov-source-ref {
   font-family: var(--mono);
   font-size: 11.5px;
-  color: #c3c3ce;
+  color: var(--prov-source-text);
   word-break: break-all;
 }
 
@@ -535,20 +659,20 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
    source itself, so it is dimmer than the quoted text and cannot be
    selected into a copy of the quote. */
 .prov-snippet .prov-elision {
-  color: #5d5d6b;
+  color: var(--text-faint);
   user-select: none;
 }
 
 .prov-snippet {
   margin: 6px 0 0;
   padding: 8px 11px;
-  background: #141418;
-  border-left: 2px solid #3f3f4b;
+  background: var(--snippet-bg);
+  border-left: 2px solid var(--snippet-border);
   border-radius: 0 5px 5px 0;
   font-family: var(--mono);
   font-size: 11.5px;
   line-height: 1.5;
-  color: #b9b9c6;
+  color: var(--snippet-text);
   white-space: pre-wrap;
   word-break: break-word;
   overflow-x: auto;
@@ -559,7 +683,7 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
 
 .judgement {
   border-top: 1px solid var(--border);
-  background: #26262d;
+  background: var(--judgement-bg);
   padding: 13px;
 }
 

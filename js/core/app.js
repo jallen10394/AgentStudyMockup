@@ -112,6 +112,10 @@ var App = {
       Util.mergeInto(STUDY, App.groupOverrides);
       App.flow = App.buildFlow();
 
+      /* The theme was applied from the default config before the
+         page was painted; a group may have just replaced it. */
+      Theme.apply(STUDY.theme);
+
       /* Which judged steps still have no provenance written. The
          participant never sees this; it is for whoever is
          authoring the scenarios. */
@@ -130,7 +134,10 @@ var App = {
         randomizeScenarioOrder: !!STUDY.randomizeScenarioOrder,
         askReason: !!STUDY.askReason,
         confidenceLevels: STUDY.confidenceLevels || 5,
-        timeLimit: STUDY.timeLimit || null
+        timeLimit: STUDY.timeLimit || null,
+        /* what was actually on screen, not the setting: 'auto'
+           resolves to one or the other before this is recorded */
+        theme: Theme.current
       });
 
       App.index = 0;
