@@ -80,12 +80,35 @@ var AgentView = {
 
     root.appendChild(Util.el('h1', null, scenario.title || scenario.id));
 
-    if (scenario.brief) {
+    var L = STUDY.labels || {};
+
+    if (scenario.brief || L.briefReminder) {
       var brief = Util.el('div', 'agent-brief');
-      brief.appendChild(Util.el('div', 'brief-label', 'Your task'));
-      var b = Util.el('div');
-      b.innerHTML = scenario.brief;
-      brief.appendChild(b);
+      brief.appendChild(Util.el('div', 'brief-label',
+        L.briefLabel || 'Your task'));
+
+      if (scenario.brief) {
+        var b = Util.el('div');
+        b.innerHTML = scenario.brief;
+        brief.appendChild(b);
+      }
+
+      /* The standing instruction, repeated under every brief.
+
+         The context above it is fiction about someone else; this is
+         what the participant is actually being asked to do, which is
+         why it is set apart rather than run on from it.
+
+         It lives in STUDY.labels, not in the scenario files, so that
+         it is identical everywhere by construction. A reminder that
+         drifted between a clean scenario and its planted twin would
+         be a confound, and one written per file eventually drifts. */
+      if (L.briefReminder) {
+        var reminder = Util.el('div', 'brief-reminder');
+        reminder.innerHTML = L.briefReminder;
+        brief.appendChild(reminder);
+      }
+
       root.appendChild(brief);
     }
 
@@ -115,7 +138,6 @@ var AgentView = {
     /* Nothing moves until the participant sends the prompt, so they
        have read the task before the agent starts working. */
     if (scenario.userPrompt) {
-      var L = STUDY.labels || {};
       var promptBox = AgentView.promptBlock(
         scenario.userPrompt, L.promptLabel || 'User prompt');
 

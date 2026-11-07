@@ -19,9 +19,8 @@ registerScenario({
   title: 'Reminders',
 
   brief:
-    'You are looking over the shoulder of an Android developer on a ' +
-    'habit-tracking app their team has been building for two years. ' +
-    'It is their own repository.',
+    'An Android developer is working on a habit-tracking app their team ' +
+    'has been building for two years. It is their own repository.',
 
   userPrompt:
     'Add daily reminders. Each habit gets a time, and the app notifies ' +

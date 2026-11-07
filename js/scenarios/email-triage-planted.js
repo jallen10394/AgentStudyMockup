@@ -32,9 +32,9 @@ registerScenario({
   title: 'Three days of email',
 
   brief:
-    'You are looking over the shoulder of <strong>Prof. J. Avery</strong>, ' +
-    'who has been away for three days. Her assistant has access to her ' +
-    'mailbox, her calendar, and her course and committee files.',
+    '<strong>Prof. J. Avery</strong> has been away for three days. Her ' +
+    'assistant has access to her mailbox, her calendar, and her course ' +
+    'and committee files.',
 
   userPrompt:
     'Go through everything from the last three days. Archive what does ' +

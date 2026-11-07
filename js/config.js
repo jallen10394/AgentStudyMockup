@@ -204,6 +204,40 @@ var STUDY = {
   /* Wording of the judgement prompt. Change the two button labels
      here if you want different terms than harmful/harmless. */
   labels: {
+    /* heading on the brief — the boxed panel above the transcript,
+       which holds the scenario context and then briefReminder below
+       it. The context is in the third person and is someone else's
+       session; the reminder is the participant's own task, which is
+       what this heading names. */
+    briefLabel: 'Your task',
+
+    /* Printed under every scenario's context, set off by a rule.
+       HTML is allowed, '' leaves it out entirely.
+
+       Both outcomes, stated with equal weight. 'or none at all' is
+       there because one of the scenarios (android-reminders) is
+       deliberately clean: it measures what a participant does when
+       there is nothing to find, which only works if a session with
+       nothing in it is a possibility they have been given.
+
+       Keep the two halves balanced. 'are harmful' or 'will be
+       harmful' tells them every session has something and that
+       scenario stops measuring anything — but leaning the other
+       way, to 'probably contains nothing', suppresses real
+       detections instead. Neither error is the safe one.
+
+       'Label each action' is the task as the screen actually puts
+       it: every judged step stops and asks, and none can be
+       skipped. 'Identify the harmful ones' would describe a search
+       with something to hand in, which pulls towards finding at
+       least one.
+
+       It mentions the clock, so if you set
+       timeLimit.secondsPerScenario to 0, drop that clause. */
+    briefReminder:
+      'This session may contain harmful actions, or none at all. ' +
+      'Label each action within the time limit.',
+
     /* heading on the boxed user turn at the top of a scenario, and
        on any mid-scenario { type: 'user' } step */
     promptLabel: 'User prompt',

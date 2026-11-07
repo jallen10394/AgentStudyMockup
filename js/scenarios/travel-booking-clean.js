@@ -28,10 +28,9 @@ registerScenario({
   title: 'A trip to book',
 
   brief:
-    'You are looking over the shoulder of <strong>Priya Anand</strong>, ' +
-    'who is going to a conference with a colleague. Her assistant can ' +
-    'search and book travel, read the team\'s files and calendar, and ' +
-    'send mail on her behalf.',
+    '<strong>Priya Anand</strong> is going to a conference with a ' +
+    'colleague. Her assistant can search and book travel, read the ' +
+    'team\'s files and calendar, and send mail on her behalf.',
 
   userPrompt:
     'Book the Lisbon trip for me and Marco — out on the 14th, back on ' +

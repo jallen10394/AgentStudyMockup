@@ -375,6 +375,17 @@ button.judge-btn:hover {
   margin-bottom: 6px;
 }
 
+/* The standing instruction. Ruled off from the context above it
+   because that context is fiction about someone else and this is
+   what the participant is being asked to do — but not dimmed, since
+   it is the more important of the two. */
+.agent-brief .brief-reminder {
+  margin-top: 11px;
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+}
+
 .terminal {
   background: var(--bg-sunken);
   border: 1px solid var(--border);
