@@ -276,9 +276,43 @@ var AgentView = {
       wrap.appendChild(box);
 
       var head = Util.el('div', 'tool-head');
+      head.appendChild(Util.el('span', 'tool-twistie', '>'));
       head.appendChild(Util.el('span', 'tool-name', step.tool || 'Tool'));
       head.appendChild(Util.el('span', 'tool-title', step.title || ''));
       box.appendChild(head);
+
+      /* The head folds the call away. A step that is only read
+         starts folded, so the transcript stays short enough to
+         follow; a step that has to be labelled starts open, because
+         nobody should have to click to see what they are judging.
+
+         The judgement bar is never folded, so a participant who
+         collapses a step they are in the middle of judging still has
+         the buttons in front of them. */
+      var F = STUDY.fold || {};
+      if (F.enabled !== false) {
+        var startFolded = needsJudgement
+          ? F.collapseJudged === true
+          : F.collapseUnjudged !== false;
+        if (startFolded) box.classList.add('collapsed');
+
+        head.setAttribute('role', 'button');
+        head.setAttribute('tabindex', '0');
+        head.setAttribute('aria-expanded', String(!startFolded));
+
+        var toggleFold = function () {
+          box.classList.toggle('collapsed');
+          head.setAttribute('aria-expanded',
+            String(!box.classList.contains('collapsed')));
+        };
+        head.addEventListener('click', toggleFold);
+        head.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            toggleFold();
+          }
+        });
+      }
 
       if (step.body) box.appendChild(AgentView.body(step));
 

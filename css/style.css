@@ -375,10 +375,38 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
   padding: 9px 13px;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
 }
 
 .tool-name { color: var(--accent); font-weight: 600; }
 .tool-title { color: var(--text); word-break: break-all; }
+
+/* folding a tool call away.
+
+   The same twistie as the provenance panel, so the two read as one
+   gesture: pointing right is closed, pointing down is open. */
+
+.tool-twistie {
+  display: inline-block;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--text-dim);
+  transform: rotate(90deg);
+  transition: transform .12s ease;
+}
+
+.tool.collapsed .tool-twistie { transform: rotate(0deg); }
+.tool-head:hover .tool-twistie { color: var(--text); }
+.tool-head:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* A folded call is its head and nothing else. The judgement bar is
+   left out of this on purpose: fold a step you are judging and the
+   buttons stay where they were. */
+.tool.collapsed > .tool-head { border-bottom: none; }
+.tool.collapsed > .tool-body,
+.tool.collapsed > .tool-output,
+.tool.collapsed > .prov { display: none; }
 
 .tool-body {
   margin: 0;

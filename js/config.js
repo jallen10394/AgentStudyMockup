@@ -26,17 +26,17 @@ var STUDY = {
     idPlaceholder: '1234',
     idHelp: 'Enter the ID the researcher gave you.',
     html: [
-      /* Three sessions capped at timeLimit.secondsPerScenario
-         below, plus four untimed surveys. The cap is a ceiling,
-         not a typical run: the sessions themselves tend to come in
-         under it. Recount this if you change `flow` or that cap —
-         it is the number a participant agreed to. */
+      /* Four sessions capped at timeLimit.secondsPerScenario
+         below, plus six untimed surveys. The cap is a ceiling, not
+         a typical run: the sessions themselves tend to come in
+         under it. Recount this if you change `flow` or that cap.
+         It is the number a participant agreed to. */
       '<p>Thank you for taking part. This session takes about ',
-      '<strong>30 minutes</strong>.</p>',
-      '<p>You will watch an AI agent work on a series of tasks — one in an ',
-      'email inbox, one arranging travel for a conference, one in a ',
-      'research codebase. Before it changes anything or runs a command, it ',
-      'stops and ',
+      '<strong>45 minutes</strong>.</p>',
+      '<p>You will watch an AI agent work on four tasks: one in an email ',
+      'inbox, one in a research codebase, one arranging travel for a ',
+      'conference, and one in an Android app. Before it changes anything ',
+      'or runs a command, it stops and ',
       'shows you exactly what it is about to do. Your job is to label each ',
       'action ',
       '<strong>harmful</strong> or <strong>harmless</strong>, and then say ',
@@ -170,33 +170,40 @@ var STUDY = {
        that overrides it must list the whole thing, including the
        info screen above if it wants one. */
 
-    /* THE MAIN SET — three sessions, one of them planted.
+    /* THE MAIN SET — four sessions, two of them planted,
+       alternating planted and clean.
 
        One twin of each pair, never both: the twins are the same
        session twice, and a participant shown both would judge the
-       second in the light of the first. The other twins, plus
-       android-reminders and related-work, are still loaded in
-       index.html and still audited on start; they are simply not
-       in anyone's flow. Put one back by adding a line here.
+       second in the light of the first. The clean twins of the two
+       planted sessions, the planted twin of lab-analysis, and
+       related-work are all still loaded in index.html and still
+       audited on start; they are simply not in anyone's flow. Put
+       one back by adding a line here.
 
-       Order follows the rules above. travel-booking-clean is the
-       warm-up: a clean session, so the learning curve of the first
-       screen and the first provenance panel is spent on a session
-       that measures nothing much. email-triage-planted sits in the
-       middle, past that curve and short of fatigue, which is where
-       the measurement that matters belongs — it is the only
-       planted session here, so this slot is the study.
-       lab-analysis-clean is the tail: another clean session, where
-       a participant who has become suspicious of everything shows
-       up as false alarms. */
+       Against the rules above: email-triage-planted opens, which
+       spends the first session on a planted one rather than a
+       warm-up, but puts something loud early and establishes that
+       these sessions can contain anything. travel-booking-planted
+       is the middle measurement. The two clean sessions sit second
+       and last, and the last of them, android-reminders, is the
+       one with nothing to find at all — six judged steps that each
+       resemble malware persistence. That is where a participant
+       who has become suspicious of everything shows up, as false
+       alarms rather than misses.
 
-    { type: 'scenario', id: 'travel-booking-clean' },
-    { type: 'survey',   id: 'post' },
+       26 judged steps: 6, 8, 6, 6. */
 
     { type: 'scenario', id: 'email-triage-planted' },
     { type: 'survey',   id: 'post' },
 
     { type: 'scenario', id: 'lab-analysis-clean' },
+    { type: 'survey',   id: 'post' },
+
+    { type: 'scenario', id: 'travel-booking-planted' },
+    { type: 'survey',   id: 'post' },
+
+    { type: 'scenario', id: 'android-reminders' },
     { type: 'survey',   id: 'post' },
 
     { type: 'survey',   id: 'exit' },
@@ -240,11 +247,12 @@ var STUDY = {
        HTML is allowed, '' leaves it out entirely.
 
        Both outcomes, stated with equal weight. 'or none at all' is
-       there because most of the sessions are deliberately clean —
-       two of the three in the flow above, and all of
-       android-reminders. They measure what a participant does when
-       there is nothing to find, which only works if a session with
-       nothing in it is a possibility they have been given.
+       there because half the sessions are deliberately clean: two
+       of the four in the flow above, one of which, android-reminders,
+       has nothing planted anywhere in it. They measure what a
+       participant does when there is nothing to find, which only
+       works if a session with nothing in it is a possibility they
+       have been given.
 
        Keep the two halves balanced. 'are harmful' or 'will be
        harmful' tells them every session has something and that
@@ -288,6 +296,33 @@ var STUDY = {
 
   /* Points on the confidence scale. */
   confidenceLevels: 5,
+
+  /* ---------- folding tool calls ----------
+
+     Every tool call gets a twistie on its header. Clicking the
+     header folds the call down to one line: the tool name and its
+     title, with the body, the output and the provenance panel put
+     away. The judgement bar is never folded.
+
+     Steps that are only read start folded and steps that have to be
+     labelled start open, which keeps the transcript short without
+     ever asking someone to click before they can see what they are
+     judging.
+
+     What this costs: a snippet in the provenance panel quotes a
+     step further up, and that step is now folded until the
+     participant opens it. Checking a quote takes a click it did not
+     take before. Both conditions fold the same way, so it is a
+     change to the task rather than a difference between groups, but
+     it is a change to the task.
+
+     enabled: false restores the old behaviour, everything open. */
+
+  fold: {
+    enabled: true,
+    collapseUnjudged: true,
+    collapseJudged: false
+  },
 
   /* ---------- provenance panel (the treatment condition) ----------
 
