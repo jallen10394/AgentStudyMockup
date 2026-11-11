@@ -382,6 +382,31 @@ button.send:hover:not(:disabled) { background: #24415a; border-color: #4a7398; }
 .tool-name { color: var(--accent); font-weight: 600; }
 .tool-title { color: var(--text); word-break: break-all; }
 
+/* the call is running.
+
+   Pushed to the right-hand end of the header, where it does not
+   move the tool name or title when it appears and disappears. */
+
+.tool-spinner {
+  margin-left: auto;
+  align-self: center;
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: tool-spin .7s linear infinite;
+}
+
+@keyframes tool-spin { to { transform: rotate(360deg); } }
+
+/* Someone who has asked for less motion still gets the signal,
+   turning slowly enough not to catch the eye. */
+@media (prefers-reduced-motion: reduce) {
+  .tool-spinner { animation-duration: 2.6s; }
+}
+
 /* folding a tool call away.
 
    The same twistie as the provenance panel, so the two read as one

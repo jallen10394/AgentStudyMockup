@@ -500,11 +500,18 @@ var STUDY = {
   reasonLabel: 'Why? (optional)',
 
   /* Playback pacing, in milliseconds.
-     typeMs: 0 turns off the typing effect entirely. */
+     typeMs: 0 turns off the typing effect entirely.
+
+     betweenSteps is the pause between one step and the next;
+     toolRun is how long a call appears to run before its output
+     lands, which is how long the spinner in its header turns. Both
+     are a little slower than they were: the transcript was arriving
+     faster than it could be read, and a spinner that comes and goes
+     inside half a second reads as a flicker rather than as work. */
   speed: {
     typeMs: 8,        // per 3 characters of agent text
-    betweenSteps: 450,
-    toolRun: 650
+    betweenSteps: 650,
+    toolRun: 900
   },
 
   /* Final screen. Keep showSummary/showRawJson off for real

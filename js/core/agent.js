@@ -325,7 +325,9 @@ var AgentView = {
 
       /* ---- not judged: just run ---- */
       if (!needsJudgement) {
+        var stopSpin = AgentView.spinner(head);
         await Util.sleep(step.runMs || speed.toolRun || 700);
+        stopSpin();
         if (ctl.aborted) { resolve(); return; }
         AgentView.appendOutput(box, step.output, step.outputIsError);
         AgentView.scroll(term);
@@ -465,7 +467,9 @@ var AgentView = {
 
           AgentView.scroll(term);
 
+          var stopJudgedSpin = AgentView.spinner(head);
           setTimeout(function () {
+            stopJudgedSpin();
             if (ctl.aborted) { resolve(); return; }
             AgentView.appendOutput(box, step.output, step.outputIsError);
             AgentView.scroll(term);
@@ -722,6 +726,23 @@ var AgentView = {
     return lines.some(function (l) {
       return l.indexOf('+') === 0 || l.indexOf('-') === 0 || l.indexOf('@@') === 0;
     });
+  },
+
+  /* The call is running. It sits in the header rather than in the
+     body, so it is visible whether the call is folded or open, and
+     it is gone the moment the output lands.
+
+     Returns the function that removes it. Call that before checking
+     whether the session was aborted, so a scenario cut short by the
+     clock does not leave a spinner turning on screen. */
+  spinner: function (head) {
+    var sp = Util.el('span', 'tool-spinner');
+    sp.setAttribute('role', 'status');
+    sp.setAttribute('aria-label', 'Running');
+    head.appendChild(sp);
+    return function () {
+      if (sp.parentNode) sp.parentNode.removeChild(sp);
+    };
   },
 
   appendOutput: function (box, text, isError) {
