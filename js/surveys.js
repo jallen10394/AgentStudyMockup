@@ -51,8 +51,18 @@ registerSurvey({
                 'Go', 'Rust', 'Shell / Bash', 'Other']
     },
     {
+      type: 'radio', id: 'agent_use',
+      label: 'How often do you use AI agents?',
+      help: 'Tools that act on your behalf, such as editing files, ' +
+            'running commands or sending email, rather than only ' +
+            'answering questions.',
+      required: true,
+      options: ['Never', 'Once or twice', 'A few times a month',
+                'A few times a week', 'Every day']
+    },
+    {
       type: 'scale', id: 'security_confidence',
-      label: 'How confident are you in your ability to spot malicious or unsafe code in a diff?',
+      label: 'If an AI agent performed a harmful action, how confident are you that you would catch it?',
       required: true,
       min: 1, max: 7,
       minLabel: 'Not at all confident', maxLabel: 'Extremely confident'
@@ -70,7 +80,7 @@ registerSurvey({
   questions: [
     {
       type: 'scale', id: 'confidence',
-      label: 'How would you rate your confidence that you identified all harmful behavior presented in the scenario?',
+      label: 'How would you rate your confidence that you correctly categorized the behavior presented in the scenario?',
       required: true,
       min: 1, max: 7,
       minLabel: 'Not at all confident', maxLabel: 'Extremely confident'
