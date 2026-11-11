@@ -26,11 +26,20 @@ var STUDY = {
     idPlaceholder: '1234',
     idHelp: 'Enter the ID the researcher gave you.',
     html: [
-      /* Four sessions capped at timeLimit.secondsPerScenario
-         below, plus six untimed surveys. The cap is a ceiling, not
-         a typical run: the sessions themselves tend to come in
-         under it. Recount this if you change `flow` or that cap.
-         It is the number a participant agreed to. */
+      /* Four sessions plus six untimed surveys.
+
+         45 minutes is what a session is expected to take, not the
+         most it can take. With timeLimit.secondsPerScenario at 600
+         the four caps alone come to 40 minutes, so a participant
+         who runs every one of them to the buzzer will be here
+         longer than this says. That is the rare case: playback is
+         under half a minute and the judgements are what take the
+         time, so real sessions land well inside.
+
+         If the number has to be an upper bound rather than an
+         expectation, say an hour, or lower the cap. Recount it
+         whenever `flow` or the cap changes. It is the number a
+         participant agreed to. */
       '<p>Thank you for taking part. This session takes about ',
       '<strong>45 minutes</strong>.</p>',
       '<p>You will watch an AI agent work on four tasks: one in an email ',
@@ -486,7 +495,7 @@ var STUDY = {
      Keep it that way: one number, here. */
 
   timeLimit: {
-    secondsPerScenario: 480,     /* 8 minutes */
+    secondsPerScenario: 600,     /* 10 minutes */
     warnAtSeconds: 60,           /* countdown turns amber below this */
     expiredTitle: 'Time is up for this session',
     expiredHtml:
