@@ -142,6 +142,22 @@ reached the agent.**
 containing it. A row with neither prints "No source — this value was produced
 by the agent."
 
+**Two kinds of row, and nothing else.** An **argument row** is one argument of
+the call: `arg` is the parameter name exactly as the tool takes it
+(`command`, `description`, `file_path`, `old_string`, `new_string`, `content`,
+`path`) with no suffix or gloss, and `value` is the literal value passed, not
+a description of it. Every argument gets a row, so the panel accounts for the
+whole call. A **match row** is for an argument that is one long string — an
+Edit's `new_string`, a `content`, a `command` — part of which came from
+somewhere: `arg` is literally `string matched`, and `value` is the matched
+string, exactly as long as the match runs.
+
+`command` is an argument. `command — the script it runs` is not, and
+`value: 'the one-liner'` is a description where the value should be. Both make
+the panel look like a record of something that was tracked when it is the
+writer summarising — which measures whether participants believe the panel
+rather than whether they can read it.
+
 Mark elisions: `trimmedBefore` / `trimmedAfter`, and a line that is exactly `…`
 for a gap in the middle. They render dimmer and unselectable, so a cut cannot
 be mistaken for what the source said.
@@ -153,8 +169,20 @@ argues measures whether people believe it, not whether they can read it.
 An origin that shows up only on harmful steps gives the answer away, so benign
 steps carry the same origins and tags.
 
-Open the browser console after a treatment ID starts: it prints every judged
-step in the flow with no provenance rows.
+Open the browser console after a treatment ID starts. It prints every judged
+step in the flow with no provenance rows, and every row that does not hold up:
+
+- the `value` is not in the call it claims to be an argument of (title or
+  body — not the output, which is what came back rather than what was passed),
+- the `source` names no earlier step,
+- the `snippet` is not verbatim in that step (gap markers allowed),
+- the `value` is not inside its own snippet,
+- a source with no snippet, or a snippet with no source.
+
+`Registry.checkProvenance('scenario-id')` runs the same checks on anything
+registered, loaded or not, and returns the problems as rows. What it cannot
+check is whether `arg` is the name the tool really takes — no tool schemas
+live in this project — so that part is still on whoever writes the scenario.
 
 ## Time limit
 

@@ -122,6 +122,22 @@ var App = {
           console.warn('Provenance panel is on. Steps still missing data:');
           console.table(gaps);
         }
+
+        /* And rows that are written but do not hold up: a value
+           that is not in the call it claims to be an argument of,
+           a snippet that is not verbatim where it says it came
+           from. Those are the two things a participant can check
+           by reading, so they are the two things that must be
+           true before anyone is shown them. */
+        var wrong = [];
+        App.flow.forEach(function (entry) {
+          if (entry.type !== 'scenario') return;
+          wrong = wrong.concat(Registry.checkProvenance(entry.id));
+        });
+        if (wrong.length && console.table) {
+          console.warn('Provenance rows that do not check out:');
+          console.table(wrong);
+        }
       }
 
       Results.init(App.participantId, App.flow, {

@@ -105,11 +105,170 @@ Registry.auditProvenance = function (flow) {
       scenario: entry.id,
       judgedSteps: judged,
       withProvenance: written,
-      missing: judged - written
+      missing: judged - written,
+      problems: Registry.checkProvenance(scn).length
     });
   });
 
   return report;
+};
+
+/* Does each provenance row say something the transcript bears out?
+   Console only, like the audit above, and for the same reason: a
+   wrong row is a flaw in the material, not a reason to stop a
+   session that is already under way.
+
+   A row makes two claims and both are checkable, because every
+   source is a step the participant has already watched go past:
+
+     - `value` is an argument of THIS call, so it appears in the
+       call — its title or its body. Not its output: the output is
+       what came back, not what was passed.
+     - `snippet` is a verbatim excerpt of the step named in
+       `source`, and the value appears inside it.
+
+   What this cannot check is the part that matters most — whether
+   the row names the argument the tool actually takes. `arg` is a
+   string and no tool schema lives in this project. It can only
+   catch a row that quotes something nobody said.
+
+   Run it over anything registered:  Registry.checkProvenance('my-id')
+
+   Returns an array of { scenario, step, tool, arg, problem }. */
+Registry.checkProvenance = function (scenario) {
+  var scn = (typeof scenario === 'string')
+    ? Registry.scenarios[scenario]
+    : scenario;
+
+  var problems = [];
+  if (!scn) return problems;
+
+  var ELLIPSIS = (window.AgentView && AgentView.ELLIPSIS) || '…';
+  var steps = scn.steps || [];
+
+  /* What the agent passed. */
+  function callText(step) {
+    return [step.title || '', step.body || ''].join('\n');
+  }
+
+  /* Everything of a step the participant saw, which is where a
+     snippet may legitimately come from. */
+  function stepText(step) {
+    return [step.title || '', step.body || '', step.output || '',
+            step.text || ''].join('\n');
+  }
+
+  /* A value too long to print is shown cut, with … where it was
+     cut. The longest run between the cuts is the part quoted
+     literally, and the only part that can be checked. */
+  function literal(value) {
+    return String(value === undefined || value === null ? '' : value)
+      .split(ELLIPSIS)
+      .map(function (part) { return part.trim(); })
+      .sort(function (a, b) { return b.length - a.length; })[0];
+  }
+
+  /* A snippet may carry its own gap markers — a line that is
+     exactly … — so it is checked in pieces, each of which must
+     appear, in order. */
+  function verbatimIn(text, snippet) {
+    var pieces = String(snippet).split('\n').reduce(function (acc, line) {
+      var bare = line.trim();
+      if (bare === ELLIPSIS || bare === '...') acc.push([]);
+      else acc[acc.length - 1].push(line);
+      return acc;
+    }, [[]]).map(function (lines) {
+      return lines.join('\n').trim();
+    }).filter(function (piece) {
+      return piece.length > 0;
+    });
+
+    var from = 0;
+    return pieces.every(function (piece) {
+      var at = text.indexOf(piece, from);
+      if (at === -1) return false;
+      from = at + piece.length;
+      return true;
+    });
+  }
+
+  steps.forEach(function (step, i) {
+    (step.provenance || []).forEach(function (row) {
+
+      function problem(text) {
+        problems.push({
+          scenario: scn.id,
+          step: i,
+          tool: step.tool || step.type,
+          arg: row.arg || '(unnamed)',
+          problem: text
+        });
+      }
+
+      var value = literal(row.value);
+
+      if (!row.arg) problem('row has no arg');
+
+      if (value && callText(step).indexOf(value) === -1) {
+        problem('value is not in the call: ' + JSON.stringify(value));
+      }
+
+      if (row.source && !row.snippet) problem('source with no snippet');
+      if (!row.source && row.snippet) problem('snippet with no source');
+      if (!row.snippet) return;
+
+      /* Resolve the source. An object names an earlier step by tool
+         and title; a plain string is the person, meaning the prompt
+         they submitted or a turn they took before this step. */
+      var sourceText = null;
+
+      if (typeof row.source === 'object') {
+        /* `ref` is a label for the reader, not an id, so a title it
+           is the start of counts — as long as only one step answers
+           to it. Anything looser and a renamed title stops being
+           caught, which is the drift this is here for. */
+        var exact = [], starts = [];
+        for (var j = 0; j < i; j++) {
+          if (steps[j].tool !== row.source.tool) continue;
+          var title = steps[j].title || '';
+          if (title === row.source.ref) exact.push(steps[j]);
+          else if (title.indexOf(row.source.ref) === 0) starts.push(steps[j]);
+        }
+        var found = exact.length ? exact : starts;
+
+        if (found.length === 1) {
+          sourceText = stepText(found[0]);
+        } else if (found.length > 1) {
+          problem('source names more than one earlier step: ' +
+                  row.source.tool + ' · ' + row.source.ref);
+        } else {
+          problem('source names no earlier step: ' +
+                  row.source.tool + ' · ' + row.source.ref);
+        }
+      } else {
+        /* A plain-string source names something in its own words —
+           the task, the user mid-session, the agent's own reasoning
+           — so the snippet is checked against everything that had
+           already happened when this call was made. */
+        var earlier = [scn.userPrompt || ''];
+        for (var k = 0; k < i; k++) earlier.push(stepText(steps[k]));
+        sourceText = earlier.join('\n');
+      }
+
+      if (sourceText !== null && !verbatimIn(sourceText, row.snippet)) {
+        problem(typeof row.source === 'string'
+          ? 'snippet is not verbatim in anything earlier in the session'
+          : 'snippet is not verbatim in that step');
+      }
+
+      if (value && String(row.snippet).indexOf(value) === -1) {
+        problem('value is not inside its own snippet: ' +
+                JSON.stringify(value));
+      }
+    });
+  });
+
+  return problems;
 };
 
 /* ---------- small shared helpers ---------- */
